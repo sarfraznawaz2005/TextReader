@@ -149,7 +149,7 @@ HasUnsavedChanges() {
 ; Helper function to confirm exit if there are unsaved changes
 ConfirmExit() {
     if (HasUnsavedChanges()) {
-        result := MsgBox("You have unsaved changes. Do you want to save before exiting?", "Unsaved Changes", "YesNoCancel")
+        result := MsgBox("You have unsaved changes. Do you want to save before exiting?", "Unsaved Changes", "YesNo")
         
         if (result == "Yes") {
             SaveCurrentFile()
@@ -157,7 +157,7 @@ ConfirmExit() {
         } else if (result == "No") {
             return true ; Proceed with close
         } else {
-            return false ; Cancel close
+            return true ; Cancel close
         }
     }
     

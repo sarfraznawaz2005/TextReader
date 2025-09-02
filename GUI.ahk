@@ -756,7 +756,7 @@ MainGui_Size(gui, minMax, width, height) {
 
         ; Adjust other controls
         lblMatchCount.Move(width - 415, 15) ; Keep its x, but y should be adjusted if it's overlapping.
-        btnSave.Move(width - 110, 5) ; Anchor to top right
+        btnSave.Move(width - 95, 5) ; Anchor to top right
     }
     WinRedraw(g_MainGui.Hwnd)
 }

@@ -470,7 +470,7 @@ CreateMainGUI() {
     g_MainGui.OnEvent("ContextMenu", MainContextMenu)
     
     ; --- Left panel ---
-    txtSearch := g_MainGui.AddEdit("x10 y5 w230 h30 +0x200")
+    txtSearch := g_MainGui.AddEdit("x5 y5 w230 h30 +0x200")
     txtSearch.SetFont("s13", "Calibri")
     txtSearch.OnEvent("Change", Search_Change)
     GuiCtrlSetTip(txtSearch, "Search for text in files")
@@ -484,19 +484,19 @@ CreateMainGUI() {
     txtSearch.OnEvent("Focus", txtSearch_OnFocus)
     txtSearch.OnEvent("LoseFocus", txtSearch_OnLoseFocus)
 
-    lvFiles := g_MainGui.AddListView("x10 y40 w230 h620 +Grid +Sort +Hdr", ["Files (0)"])
+    lvFiles := g_MainGui.AddListView("x5 y40 w230 h620 +Grid +Sort +Hdr", ["Files (0)"])
     lvFiles.SetFont("s13", "Calibri")
     lvFiles.OnEvent("Click", FileList_Click)
     lvFiles.OnEvent("DoubleClick", FileList_DoubleClick)
     lvFiles.OnEvent("ContextMenu", FileList_ContextMenu)
     lvFiles.OnEvent("ItemFocus", FileList_ItemFocus) ; New: Open file on item focus change
 
-    btnAddFile := g_MainGui.AddButton("x10 y660 w110 h30 +0x1000", "📄 New File")
+    btnAddFile := g_MainGui.AddButton("x8 y660 w110 h30 +0x1000", "📄 New File")
     btnAddFile.SetFont("s10")
     btnAddFile.OnEvent("Click", AddNewFile_Click)
     GuiCtrlSetTip(btnAddFile, "Add a new file")
 
-    btnSettings := g_MainGui.AddButton("x128 y660 w110 h30 +0x1000", "⚙️ Settings")
+    btnSettings := g_MainGui.AddButton("x123 y660 w110 h30 +0x1000", "⚙️ Settings")
     btnSettings.SetFont("s10")
     btnSettings.OnEvent("Click", Settings_Click)
     GuiCtrlSetTip(btnSettings, "Open settings")
@@ -516,7 +516,7 @@ CreateMainGUI() {
 
     ; --- Formatting Toolbar ---
     ypos := 5
-    xpos := 245
+    xpos := 240
     btnH := 30
     btnW := 35
     iconFont := "Segoe MDL2 Assets"
@@ -686,7 +686,7 @@ CreateMainGUI() {
     }
 	
     ; --- Main content area ---
-    rtfContent := RichEdit(g_MainGui, "x245 y40 w680 h580")
+    rtfContent := RichEdit(g_MainGui, "x240 y40 w680 h580")
     rtfContent.SetFont({Size: 13, Name: "Calibri"})
 	rtfContent.WordWrap(g_WordWrap)
     rtfContent.OnCommand(0x0300, Content_Change) ; EN_CHANGE notification

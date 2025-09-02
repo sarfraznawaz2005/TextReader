@@ -125,9 +125,9 @@ AddNewFile() {
         ; Find and select the new file
         Loop lvFiles.GetCount() {
             ; Compare the cleaned ListView text with the new file name
-            if (RegExReplace(lvFiles.GetText(A_Index, 1), "^📄\s", "") == fileName) {
+            if (RegExReplace(lvFiles.GetText(A_Index, 1), "^📄\s", "") == RegExReplace(fileName, "\.rtf$", "")) {
                 lvFiles.Modify(A_Index, "+Select +Focus")
-                OpenFileInViewer(fileName)
+                OpenFileInViewer(lvFiles.GetText(A_Index, 1))
                 break
             }
         }

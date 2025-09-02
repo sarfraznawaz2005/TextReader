@@ -198,7 +198,7 @@ ToggleNumberList(*) {
     if (pf.Numbering == 2) { ; If it's already an arabic number list, remove numbering
         rtfContent.SetParaNumbering()
     } else {
-        rtfContent.SetParaNumbering({Type: "Arabic", Style: "Period"})
+        rtfContent.SetParaNumbering({Type: "Arabic", Style: "Period", Start: 1})
     }
     rtfContent.Focus()
 }

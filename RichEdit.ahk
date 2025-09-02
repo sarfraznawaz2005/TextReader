@@ -95,7 +95,7 @@ Class RichEdit {
       If (MultiLine) {
          ; Adjust the formatting rectangle
          RC := This.GetRect()
-         This.SetRect(RC.L + 20, RC.T + 20, RC.R - 20, RC.B - 20)
+         This.SetRect(RC.L + 20, RC.T + 20, RC.R - 20, RC.B)
          ; Set advanced typographic options
          ; EM_SETTYPOGRAPHYOPTIONS = 0x04CA (WM_USER + 202)
          ; TO_ADVANCEDTYPOGRAPHY	= 1, TO_ADVANCEDLAYOUT = 8 ? not documented

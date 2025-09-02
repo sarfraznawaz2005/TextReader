@@ -516,7 +516,7 @@ CreateMainGUI() {
 
     ; --- Formatting Toolbar ---
     ypos := 5
-    xpos := 250
+    xpos := 245
     btnH := 30
     btnW := 35
     iconFont := "Segoe MDL2 Assets"

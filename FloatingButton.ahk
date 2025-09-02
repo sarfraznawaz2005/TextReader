@@ -89,7 +89,7 @@ FloatingButton_Click(*) {
         RefreshFileList()
     } else {
         ; Recreate main GUI if it was closed
-        CreateMainGUI()
+        ;CreateMainGUI()
         g_MainGui.Show("w1200 h700")
         RefreshFileList()
     }

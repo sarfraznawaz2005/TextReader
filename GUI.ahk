@@ -453,7 +453,7 @@ CreateMainGUI() {
     g_WordWrap := true ; Default word wrap to off
 
     ; Create main window
-    g_MainGui := Gui("+Resize +MaximizeBox -MinimizeBox", "Text Reader" . (g_WorkingFolder != "" ? " (" . g_WorkingFolder . ")" : ""))
+    g_MainGui := Gui("+MaximizeBox -MinimizeBox", "Text Reader" . (g_WorkingFolder != "" ? " (" . g_WorkingFolder . ")" : ""))
     g_MainGui.SetFont("s10", "Segoe UI")
     g_MainGui.BackColor := "0xF5F5F5"
 

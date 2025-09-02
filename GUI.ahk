@@ -470,7 +470,7 @@ CreateMainGUI() {
     g_MainGui.OnEvent("ContextMenu", MainContextMenu)
     
     ; --- Left panel ---
-    txtSearch := g_MainGui.AddEdit("x10 y0 w230 h30 +0x200")
+    txtSearch := g_MainGui.AddEdit("x10 y5 w230 h30 +0x200")
     txtSearch.SetFont("s13", "Calibri")
     txtSearch.OnEvent("Change", Search_Change)
     GuiCtrlSetTip(txtSearch, "Search for text in files")
@@ -508,14 +508,14 @@ CreateMainGUI() {
     lblMatchCount := g_MainGui.AddText("x250 y15 w200 h20", "")
     GuiCtrlSetTip(lblMatchCount, "Number of search matches")
 
-    btnSave := g_MainGui.AddButton("x900 y0 w80 h30 +0x1000", "💾 Save")
+    btnSave := g_MainGui.AddButton("x900 y5 w80 h30 +0x1000", "💾 Save")
     btnSave.SetFont("s9")
     btnSave.OnEvent("Click", Save_Click)
     btnSave.Visible := false
     GuiCtrlSetTip(btnSave, "Save current file (Ctrl+S)")
 
     ; --- Formatting Toolbar ---
-    ypos := 0
+    ypos := 5
     xpos := 250
     btnH := 30
     btnW := 35
@@ -757,7 +757,7 @@ MainGui_Size(gui, minMax, width, height) {
 
         ; Adjust other controls
         lblMatchCount.Move(width - 415, 15) ; Keep its x, but y should be adjusted if it's overlapping.
-        btnSave.Move(width - 110, 0) ; Anchor to top right
+        btnSave.Move(width - 110, 5) ; Anchor to top right
     }
     WinRedraw(g_MainGui.Hwnd)
 }

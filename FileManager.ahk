@@ -21,8 +21,9 @@ RefreshFileList() {
     ; Add rtf files
     fileCount := 0
     Loop Files, g_WorkingFolder . "\*.rtf" {
-        LogDebug("Adding file to ListView: " . A_LoopFileName)
-        lvFiles.Add(, "📄 " . A_LoopFileName)
+        fileNameWithoutExt := RegExReplace(A_LoopFileName, "\.rtf$", "")
+        LogDebug("Adding file to ListView: " . fileNameWithoutExt)
+        lvFiles.Add(, "📄 " . fileNameWithoutExt)
         fileCount++
     }
     LogDebug("Found " . fileCount . " .rtf files in " . g_WorkingFolder)
@@ -45,7 +46,7 @@ OpenFileInViewer(fileName) {
     LogDebug("Opening file in viewer: " . fileName)
     
     cleanedFileName := RegExReplace(fileName, "^📄\s", "")
-    fullPath := g_WorkingFolder . "\" . cleanedFileName
+    fullPath := g_WorkingFolder . "\" . cleanedFileName . ".rtf"
 
     if (!FileExist(fullPath)) {
         LogError("File not found: " . fullPath)
@@ -79,7 +80,7 @@ OpenFileInExternalEditor(fileName) {
     ; Remove the file icon prefix if present
     cleanedFileName := RegExReplace(fileName, "^📄\s", "")
 
-    filePath := g_WorkingFolder . "\" . cleanedFileName
+    filePath := g_WorkingFolder . "\" . cleanedFileName . ".rtf"
 
     
     if (FileExist(filePath)) {
@@ -143,7 +144,7 @@ SaveCurrentFile() {
         return
     }
     
-    filePath := g_WorkingFolder . "\" . g_CurrentFile
+    filePath := g_WorkingFolder . "\" . g_CurrentFile . ".rtf"
     
     try {
         rtfContent.SaveFile(filePath)
@@ -178,7 +179,7 @@ RenameFile(oldName) {
         newName .= ".rtf"
     }
     
-    oldPath := g_WorkingFolder . "\" . cleanedOldName
+    oldPath := g_WorkingFolder . "\" . cleanedOldName . ".rtf"
     newPath := g_WorkingFolder . "\" . newName
 
     try {
@@ -186,8 +187,8 @@ RenameFile(oldName) {
         RefreshFileList()
         
         ; Update current file if it was renamed
-        if (g_CurrentFile == oldName) {
-            g_CurrentFile := newName
+        if (g_CurrentFile == cleanedOldName) {
+            g_CurrentFile := RegExReplace(newName, "\.rtf$", "")
         }
         
     } catch Error as e {
@@ -207,7 +208,7 @@ DeleteFile(fileName) {
         return
     }
     
-    filePath := g_WorkingFolder . "\" . cleanedFileName
+    filePath := g_WorkingFolder . "\" . cleanedFileName . ".rtf"
 
     
     try {

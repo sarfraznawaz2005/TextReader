@@ -30,7 +30,7 @@ RefreshFileList() {
 
     ; Update header with file count
     lvFiles.ModifyCol(1, "Text", "Files (" . fileCount . ")")
-    lvFiles.ModifyCol(1, 228) ; Auto-size column
+    lvFiles.ModifyCol(1, "AutoHdr") ; Auto-size column to fit header and content
 
     ; If no files found (but working folder is valid), clear content
     if (fileCount == 0) {

@@ -94,7 +94,6 @@ SearchAllFiles(searchText) {
     }
     
     g_IsSearchMode := true
-    g_MainGui.Title := "Text Reader - Search Results"
 }
 
 FindMatches(content, searchText, tempRe) {

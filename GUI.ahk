@@ -750,7 +750,7 @@ MainGui_Size(gui, minMax, width, height) {
         btnSettings.Move(, height - 35) ; Anchor to bottom with 5px top margin
 
         ; Right panel adjusts
-        rightWidth := width - 255
+        rightWidth := width - 240
         rightHeight := height - 40 ; New height calculation for rtfContent
 
         rtfContent.Move(, 40, rightWidth, rightHeight) ; Move rtfContent to y40

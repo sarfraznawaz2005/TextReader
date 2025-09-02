@@ -498,7 +498,7 @@ CreateMainGUI() {
     btnSettings := g_MainGui.AddButton("x110 y660 w97 h30 +0x1000", "⚙️ Settings")
     btnSettings.SetFont("s10")
     btnSettings.OnEvent("Click", Settings_Click)
-    GuiCtrlSetTip(btnSettings, "Open settings")
+    GuiCtrlSetTip(btnSettings, "Open Settings")
     lvFiles.OnEvent("Click", FileList_Click)
     lvFiles.OnEvent("DoubleClick", FileList_DoubleClick)
     lvFiles.OnEvent("ContextMenu", FileList_ContextMenu)
@@ -511,7 +511,7 @@ CreateMainGUI() {
     btnSave.SetFont("s9")
     btnSave.OnEvent("Click", Save_Click)
     btnSave.Visible := false
-    GuiCtrlSetTip(btnSave, "Save current file (Ctrl+S)")
+    GuiCtrlSetTip(btnSave, "Save (Ctrl+S)")
 
     ; --- Formatting Toolbar ---
     ypos := 5
@@ -556,13 +556,13 @@ CreateMainGUI() {
     xpos += separatorWidth
 
     ; Color Group
-    btnTextColor := g_MainGui.AddButton("x" . xpos . " y" . ypos . " w" . btnW . " h" . btnH, "TC")
+    btnTextColor := g_MainGui.AddButton("x" . xpos . " y" . ypos . " w" . btnW . " h" . btnH, "TX")
     btnTextColor.SetFont("s12")
     btnTextColor.OnEvent("Click", ChooseTextColor)
     GuiCtrlSetTip(btnTextColor, "Text Color")
     xpos += btnW
 
-    btnBgColor := g_MainGui.AddButton("x" . xpos . " y" . ypos . " w" . btnW . " h" . btnH, "BC")
+    btnBgColor := g_MainGui.AddButton("x" . xpos . " y" . ypos . " w" . btnW . " h" . btnH, "BK")
     btnBgColor.SetFont("s12")
     btnBgColor.OnEvent("Click", ChooseTextBkColor)
     GuiCtrlSetTip(btnBgColor, "Text Background Color")

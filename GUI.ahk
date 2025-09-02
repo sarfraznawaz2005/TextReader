@@ -457,6 +457,13 @@ CreateMainGUI() {
     g_MainGui.SetFont("s10", "Segoe UI")
     g_MainGui.BackColor := "0xF5F5F5"
 
+    ; Set title bar color
+    ; Set title bar color
+    titleBarColor := 0xD3D3D3 ; BGR color for #d3d3d3 (slightly darker than #dddddd)
+    colorBuffer := Buffer(4) ; Create a buffer of 4 bytes (for a 32-bit integer)
+    NumPut("UInt", titleBarColor, colorBuffer) ; Put the color value into the buffer
+    DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", g_MainGui.Hwnd, "Int", 35, "Ptr", colorBuffer.Ptr, "Int", 4)
+
     ; Set minimum size
     g_MainGui.OnEvent("Size", MainGui_Size)
     g_MainGui.OnEvent("Close", MainGui_Close)

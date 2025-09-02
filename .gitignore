@@ -1,3 +1,4 @@
 TextReader.ini
 error.log
 debug.log
+*.ahk.bak

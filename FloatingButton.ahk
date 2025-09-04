@@ -1,13 +1,13 @@
 ; Floating Desktop Button
 
 global g_FloatingGui := ""
-global g_ButtonX := 100
-global g_ButtonY := 100
+global g_ButtonX := 0
+global g_ButtonY := 0
 global g_IsDragging := false
 global g_Transparency := 128 ; Default to 50% opaque
 
 ; New function to place the button at the bottom-right
-PlaceBottomRight(buttonWidth, buttonHeight, rightMargin := 100, bottomMargin := 40) {
+SetButtonXY(buttonWidth, buttonHeight, rightMargin := 20, bottomMargin := 20) {
     MonitorGetWorkArea(MonitorGetPrimary(), &L, &T, &R, &B)
     global g_ButtonX, g_ButtonY
     g_ButtonX := R - buttonWidth - rightMargin
@@ -28,9 +28,13 @@ CreateFloatingButton() {
         return ; Can't create the button without a parent
     }
 
-    ; Load button position from settings, or place bottom-right if not found/invalid
     LoadButtonPosition()
-    SaveButtonPosition() ; Ensure initial position is saved to INI
+    
+    ; Load button position from settings, or place bottom-right if not found/invalid
+    iniFile := A_ScriptDir . "\TextReader.ini"
+    if !FileExist(iniFile) {    
+        SaveButtonPosition()
+    }
     
     if (g_FloatingGui)
 		g_FloatingGui.Destroy()
@@ -113,15 +117,15 @@ LoadButtonPosition() {
     ; Check if values are valid numbers and within screen bounds
     ; Using A_ScreenWidth and A_ScreenHeight for bounds check as they are readily available.
     ; The actual placement will use MonitorGetWorkArea for more precise positioning.
-    isValidX := (readX != "" && IsNumber(readX) && Integer(readX) >= 0 && Integer(readX) <= A_ScreenWidth - 185)
-    isValidY := (readY != "" && IsNumber(readY) && Integer(readY) >= 0 && Integer(readY) <= A_ScreenHeight - 45)
+    isValidX := (readX != "" && IsNumber(readX) && Integer(readX) >= 0)
+    isValidY := (readY != "" && IsNumber(readY) && Integer(readY) >= 0)
     
     if (isValidX && isValidY) {
         g_ButtonX := Integer(readX)
         g_ButtonY := Integer(readY)
     } else {
         ; If not valid or not found, place at bottom-right
-        PlaceBottomRight(185, 45) ; Button width and height
+        SetButtonXY(100, 20) ; Button width and height
     }
     
     ; Validate and set transparency
@@ -136,9 +140,10 @@ SaveButtonPosition() {
     global g_ButtonX, g_ButtonY, g_Transparency
     
     iniFile := A_ScriptDir . "\TextReader.ini"
+    
     IniWrite(g_ButtonX, iniFile, "FloatingButton", "X")
     IniWrite(g_ButtonY, iniFile, "FloatingButton", "Y")
-    IniWrite(g_Transparency, iniFile, "FloatingButton", "Transparency")
+    IniWrite(g_Transparency, iniFile, "FloatingButton", "Transparency")    
 }
 
 ; Toggle floating button visibility

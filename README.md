@@ -10,6 +10,7 @@ I built this app for personal needs as my desktop was becoming a mess due to var
 
 ## Features
 
+*   **AI Chat:** Chat with documents using AI.
 *   **Rich Text Display:** Supports displaying text with various formatting options.
 *   **File Management:** Open and manage text files easily.
 *   **Text Search:** Efficiently search for specific text within open documents.

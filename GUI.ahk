@@ -1,6 +1,10 @@
+#Requires AutoHotkey v2.0
+#SingleInstance Force
+#Warn
 
-global MainColors, RE1 ; RE1 is a dummy control for UpdateGui in RichEditSample.ahk
+global MainColors, RE1
 global ContextMenu
+ 
 
 ; ======================================================================================================================
 ; Sets multi-line tooltips for any Gui control.
@@ -360,6 +364,14 @@ Save_Click(*) {
     SaveCurrentFile()
 }
 
+QuickAction_Click(*) {
+    try {
+        AIChat_Open()
+    } catch as e {
+        LogError("Assistant window error: " . e.Message)
+    }
+}
+
 Content_Change(*) {
     global g_isDirty, g_IsSearchMode, btnSave, g_CurrentFile
     if (g_IsSearchMode) {
@@ -448,7 +460,7 @@ ClearFN(*) {
 }
 
 CreateMainGUI() {
-    global g_MainGui, g_WorkingFolder, g_FontSize, g_FontName, rtfContent, lvFiles, txtSearch, lblMatchCount, btnSave, g_WordWrap, btnAddFile, btnSettings
+    global g_MainGui, g_WorkingFolder, g_FontSize, g_FontName, rtfContent, lvFiles, txtSearch, lblMatchCount, btnSave, g_WordWrap, btnAddFile, btnSettings, btnQuickAction
 
     g_WordWrap := true ; Default word wrap to off
 
@@ -468,6 +480,7 @@ CreateMainGUI() {
     g_MainGui.OnEvent("Size", MainGui_Size)
     g_MainGui.OnEvent("Close", MainGui_Close)
     g_MainGui.OnEvent("ContextMenu", MainContextMenu)
+    
     
     ; --- Left panel ---
     txtSearch := g_MainGui.AddEdit("x5 y5 w200 h30 +0x200")
@@ -512,6 +525,23 @@ CreateMainGUI() {
     btnSave.OnEvent("Click", Save_Click)
     btnSave.Visible := false
     GuiCtrlSetTip(btnSave, "Save (Ctrl+S)")
+
+    ; Top-right quick action button (Unicode icon)
+    ; Robot emoji icon
+    btnQuickAction := g_MainGui.AddButton("x990 y5 w35 h30 +0x1000", "🤖")
+    btnQuickAction.SetFont("s16", "Segoe UI Emoji")
+    btnQuickAction.OnEvent("Click", QuickAction_Click)
+    GuiCtrlSetTip(btnQuickAction, "Quick Action")
+
+    ; Check if AIChat is enabled in TextReader.ini
+    cfg := LoadConfig()
+    AIChatEnabled := cfg.Get("enabled", "0")
+
+    if (AIChatEnabled = "true" || AIChatEnabled = "1") {
+        btnQuickAction.Visible := true
+    } else {
+        btnQuickAction.Visible := false
+    }
 
     ; --- Formatting Toolbar ---
     ypos := 5
@@ -756,7 +786,10 @@ MainGui_Size(gui, minMax, width, height) {
 
         ; Adjust other controls
         lblMatchCount.Move(width - 415, 15) ; Keep its x, but y should be adjusted if it's overlapping.
-        btnSave.Move(width - 95, 5) ; Anchor to top right
+        ; Anchor top-right controls: quick action closest to caption buttons, then Save to its left
+        btnQuickAction.Move(width - 50, 5)
+        btnSave.Move(width - 135, 5)
+        ; (flyout reposition removed)
     }
     WinRedraw(g_MainGui.Hwnd)
 }
@@ -810,3 +843,4 @@ RtfContent_RButtonUp(wParam, lParam, Msg, Hwnd) {
     }
 }
 
+ 

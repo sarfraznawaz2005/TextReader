@@ -125,7 +125,7 @@ LoadButtonPosition() {
         g_ButtonY := Integer(readY)
     } else {
         ; If not valid or not found, place at bottom-right
-        SetButtonXY(100, 20) ; Button width and height
+        SetButtonXY(275, 75) ; Button width and height
     }
     
     ; Validate and set transparency

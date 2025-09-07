@@ -2,6 +2,8 @@
 #SingleInstance Force
 #Warn
 
+;try FileDelete(A_ScriptDir . "\TextReader.ini")
+
 try DllCall("SetProcessDPIAware")
 
 ; --- Tray Menu ---
@@ -17,7 +19,7 @@ try FileDelete(LOG_ERRORS)
 try FileDelete(LOG_DEBUG)
 
 LogDebug(msg) {
-  ;FileAppend(Format("[{1}] DEBUG: {2}`r`n", A_Now, msg), LOG_DEBUG)
+  FileAppend(Format("[{1}] DEBUG: {2}`r`n", A_Now, msg), LOG_DEBUG)
 }
 
 LogError(msg) {
@@ -32,14 +34,16 @@ LogUnhandled(e, mode) {
 }
 
 ; Include other modules
+#Include "Utils.ahk"
 #Include "FloatingButton.ahk"
 #Include "RichEdit.ahk"
 #Include "RichEditDlgs.ahk"
+#Include "AIChat.ahk"
 #Include "GUI.ahk"
 #Include "FileManager.ahk"
 #Include "Settings.ahk"
 #Include "SearchManager.ahk"
-#Include "Utils.ahk"
+#Include "AIChat.ahk"
 
 ; Global variables
 global g_MainGui := ""

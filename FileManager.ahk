@@ -1,5 +1,7 @@
 ; File Management Functions
 
+#Include AIAssistant.ahk
+
 RefreshFileList() {
     global lvFiles, g_WorkingFolder, rtfContent, g_CurrentFile, btnSave
     LogDebug("RefreshFileList called. g_WorkingFolder: " . g_WorkingFolder)
@@ -148,10 +150,41 @@ SaveCurrentFile() {
     
     try {
         rtfContent.SaveFile(filePath)
+		
+		if (g_isDirty)
+			IngestFileIntoVectorStore(filePath)
+			
         btnSave.Visible := false
         g_isDirty := false ; Reset dirty flag
     } catch Error as e {
         MsgBox("Error saving file: " . e.message, "Error", "16")
+    }
+}
+
+IngestFileIntoVectorStore(filePath) {
+    try {
+        cfg := LoadConfig()
+		
+		AIChatEnabled := cfg.Get("enabled", "0")
+
+		if (AIChatEnabled = "true" || AIChatEnabled = "1") {
+			chunkSize := cfg.Get("chunkSize", "500")
+			overlap := cfg.Get("overlap", "100")
+			pad := cfg.Get("pad", "25")
+
+			opts := { chunkSize: chunkSize, overlap: overlap, pad: pad }
+					IngestFileProviderEmbeddingsAsync(filePath, cfg, opts, (ok) => HandleIngestionResult(ok, filePath))			
+		}
+    } catch Error as e {
+        LogError("Error during AI vector store ingestion: " . e.message)
+    }
+}
+
+HandleIngestionResult(ok, path) {
+    if (ok) {
+        LogDebug("File ingestion to vector store successful: " . path)
+    } else {
+        TrayTip("Ingestion Failed", "File could not be ingested")
     }
 }
 

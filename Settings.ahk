@@ -22,7 +22,7 @@ ShowSettingsWindow() {
     ; Create settings GUI
     settingsGui := Gui("+Owner" . g_MainGui.Hwnd . " -MinimizeBox -MaximizeBox", "Settings")
     settingsGui.SetFont("s10", "Segoe UI")
-    settingsGui.BackColor := "0xF5F5F5"
+    ;settingsGui.BackColor := "0xF5F5F5"
     
     ; Working folder setting
     settingsGui.AddText("x20 y20 w100 h20", "Working Folder:")
@@ -70,7 +70,7 @@ ShowSettingsWindow() {
     
     ; Center and show
     CenterWindow(settingsGui)
-    settingsGui.Show("w430 h320")
+    settingsGui.Show("AutoSize")
 }
 
 BrowseFolder(txtControl) {

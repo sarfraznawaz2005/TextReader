@@ -2,3 +2,5 @@ TextReader.ini
 error.log
 debug.log
 *.ahk.bak
+vector_store.json
+chat_history.json

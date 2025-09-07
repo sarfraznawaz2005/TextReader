@@ -214,7 +214,7 @@ StrictRAGInstruction() {
     Do not use outside knowledge or make assumptions other than replying to salutations or acknowledgments.
 
     OUTPUT FORMAT:
-    Your answer must always be simple text, no HTML, no markdown. Text must be nicely formatted with 
+    Your answer must always be simple text, no HTML, no markdown, no rich text. Text must be nicely formatted with 
 	appropriate new lines and spacing, indentation, special marks such as *, -, etc. so it becomes easy 
 	to read for humans.
     )"

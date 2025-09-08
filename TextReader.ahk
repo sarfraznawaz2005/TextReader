@@ -19,7 +19,7 @@ try FileDelete(LOG_ERRORS)
 try FileDelete(LOG_DEBUG)
 
 LogDebug(msg) {
-  FileAppend(Format("[{1}] DEBUG: {2}`r`n", A_Now, msg), LOG_DEBUG)
+  ;FileAppend(Format("[{1}] DEBUG: {2}`r`n", A_Now, msg), LOG_DEBUG)
 }
 
 LogError(msg) {

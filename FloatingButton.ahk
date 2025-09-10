@@ -90,12 +90,10 @@ FloatingButton_Click(*) {
     ; Show or focus main window
     if (WinExist(g_MainGui.Hwnd)) {
         g_MainGui.Show()
-        RefreshFileList()
     } else {
         ; Recreate main GUI if it was closed
         ;CreateMainGUI()
         g_MainGui.Show("w1200 h700")
-        RefreshFileList()
     }
 }
 

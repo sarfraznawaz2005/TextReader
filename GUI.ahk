@@ -386,13 +386,24 @@ Content_Change(*) {
 }
 
 RtfContent_Link(RE, L) {
-	global rtfContent
-	
+	global rtfContent, g_SearchLinks, g_IsSearchMode
+
    If (NumGet(L, A_PtrSize * 3, "Int") = 0x0202) { ; WM_LBUTTONUP
       wParam  := NumGet(L, (A_PtrSize * 3) + 4, "UPtr")
       lParam  := NumGet(L, (A_PtrSize * 4) + 4, "UPtr")
       cpMin   := NumGet(L, (A_PtrSize * 5) + 4, "Int")
       cpMax   := NumGet(L, (A_PtrSize * 5) + 8, "Int")
+
+      ; If this click landed on a search-result link, open that file/line instead of treating it as a URL
+      if (g_IsSearchMode) {
+         for link in g_SearchLinks {
+            if (cpMin >= link.start && cpMin < link.end) {
+               OpenSearchResultLink(link.file, link.line)
+               return
+            }
+         }
+      }
+
       URLtoOpen := rtfContent.GetTextRange(cpMin, cpMax)
       Run '"' URLtoOpen '"'
    }

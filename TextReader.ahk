@@ -50,6 +50,7 @@ global g_MainGui := ""
 global g_CurrentFile := ""
 global g_WorkingFolder := ""
 global g_SearchResults := []
+global g_SearchLinks := []
 global g_IsSearchMode := false
 global g_FileContent := ""
 global g_SearchTimer := ""

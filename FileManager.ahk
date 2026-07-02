@@ -61,6 +61,7 @@ OpenFileInViewer(fileName) {
         rtfContent.LoadFile(fullPath, "Open")
         rtfContent.ClearAllFormatting()
         rtfContent.SetFont({Size: 13, Name: "Calibri"})
+        rtfContent.AutoURL(true) ; Re-enable URL auto-detection for normal document viewing (search results turn it off)
         rtfContent.SetEventMask(["SELCHANGE", "LINK", "CHANGE"])
         SetToolbarVisibility(true) ; Show toolbar when a file is opened
         

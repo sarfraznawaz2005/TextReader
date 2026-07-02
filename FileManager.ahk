@@ -65,6 +65,7 @@ OpenFileInViewer(fileName) {
         SetToolbarVisibility(true) ; Show toolbar when a file is opened
         
         rtfContent.SetEnabled(true)
+        rtfContent.SetReadOnly(false)
         g_CurrentFile := cleanedFileName
         btnSave.Visible := false
         g_IsSearchMode := false

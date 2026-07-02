@@ -299,14 +299,15 @@ SearchPerform() {
     ; Perform the search logic here
     if (StrLen(txtSearch.Text) > 1) {
         g_IsSearchMode := true
+        rtfContent.SetEnabled(true)
         lvFiles.Modify(0, "-Select") ; Deselect all items
-        rtfContent.SetEnabled(false)
         SetToolbarVisibility(false)
         btnSave.Visible := false
         SearchAllFiles(txtSearch.Text)
+        rtfContent.SetReadOnly(true)
     } else if (StrLen(txtSearch.Text) == 0) {
         g_IsSearchMode := false
-        rtfContent.SetEnabled(true)
+        rtfContent.SetReadOnly(false)
         RefreshFileList()
         if (g_CurrentFile != "") {
             OpenFileInViewer(g_CurrentFile)
@@ -342,9 +343,10 @@ FileList_ContextMenu(lv, item, isRightClick, x, y) {
 }
 
 FileList_ItemFocus(lv, rowNumber) {
-    ; lv: The ListView control object
-    ; rowNumber: The 1-based index of the item that gained focus. 0 if no item has focus.
-    global rtfContent, g_CurrentFile, btnSave
+    global rtfContent, g_CurrentFile, btnSave, g_IsSearchMode
+
+    if (g_IsSearchMode)
+        return
 
     if (rowNumber > 0) {
         selectedFileName := lv.GetText(rowNumber, 1)
@@ -408,6 +410,25 @@ txtSearch_OnLoseFocus(*) {
     if (txtSearch.Text == "") {
         txtSearch.Text := PLACEHOLDER_TEXT
     }
+}
+
+ClearSearch_Click(*) {
+    global txtSearch, g_IsSearchMode, rtfContent, g_CurrentFile, g_WorkingFolder
+    txtSearch.Text := ""
+    if (g_IsSearchMode) {
+        g_IsSearchMode := false
+        rtfContent.SetReadOnly(false)
+        rtfContent.SetEnabled(true)
+        RefreshFileList()
+        if (g_CurrentFile != "") {
+            OpenFileInViewer(g_CurrentFile)
+            SetToolbarVisibility(true)
+        } else {
+            ShowWelcomeMessage(g_WorkingFolder == "")
+            SetToolbarVisibility(false)
+        }
+    }
+    txtSearch.Focus()
 }
 
 ; --- RichEdit Action Functions for Context Menu ---
@@ -483,9 +504,14 @@ CreateMainGUI() {
     
     
     ; --- Left panel ---
-    txtSearch := g_MainGui.AddEdit("x5 y5 w200 h30 +0x200")
+    txtSearch := g_MainGui.AddEdit("x5 y5 w170 h30 +0x200")
     txtSearch.SetFont("s13", "Calibri")
     txtSearch.OnEvent("Change", Search_Change)
+
+    btnClearSearch := g_MainGui.AddButton("x175 y5 w30 h30", "✕")
+    btnClearSearch.SetFont("s10")
+    btnClearSearch.OnEvent("Click", ClearSearch_Click)
+    GuiCtrlSetTip(btnClearSearch, "Clear search")
 
     ; Add placeholder functionality
     global PLACEHOLDER_TEXT := "Search in files..."
@@ -803,7 +829,9 @@ MainGui_Close(*) {
 }
 
 ShowWelcomeMessage(isNoWorkingFolder := false) {
-    global rtfContent
+    global rtfContent, g_IsSearchMode
+    if (g_IsSearchMode)
+        return
     if (isNoWorkingFolder) {
         rtfContent.SetText("Welcome to Text Reader!`r`n`r`n" .
                           "To get started:`r`n" .

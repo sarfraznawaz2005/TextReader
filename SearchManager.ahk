@@ -1,12 +1,25 @@
 ; Search Management Functions
 
 SearchAllFiles(searchText) {
-    global g_WorkingFolder, rtfContent, g_SearchResults, g_SearchLinks, g_IsSearchMode, g_MainGui
+    global g_WorkingFolder, rtfContent, g_SearchResults, g_SearchLinks, g_LastSearchTerm, g_IsSearchMode, g_MainGui
 
     if (searchText == "" || g_WorkingFolder == "") {
         g_IsSearchMode := false
         return
     }
+
+    ; This must run start-to-finish without being interrupted by another search (e.g. the
+    ; debounce timer re-firing while a slow scan over large files is still in progress).
+    ; Otherwise a second run's SetText("")/rebuild can interleave with this one's still-in-
+    ; flight writes, producing duplicated entries and g_SearchLinks ranges that no longer
+    ; match the real document.
+    Critical("On")
+
+    ; Set this up-front (not just at the end) so Content_Change's g_IsSearchMode guard
+    ; correctly ignores the flurry of edits made below while building the results view -
+    ; otherwise those edits get misread as real, unsaved user edits to the previous file.
+    g_IsSearchMode := true
+    g_LastSearchTerm := searchText
 
     rtfContent.SetText("") ; Clear the content
     rtfContent.AutoURL(false) ; Prevent RichEdit's own URL auto-detect pass from stripping our manual link formatting
@@ -14,9 +27,13 @@ SearchAllFiles(searchText) {
     g_SearchLinks := []
     totalMatches := 0
 
-    ; Create a temporary hidden GUI and RichEdit control for text extraction
+    ; Create a temporary hidden GUI and RichEdit control for text extraction.
+    ; Word wrap must be off so its line numbers are stable paragraph counts, independent
+    ; of this control's (tiny, 1px) width - otherwise "line N" here would not agree with
+    ; "line N" in the real, full-width rtfContent control once word wrap re-flows things.
     tempGui := Gui()
     tempRe := RichEdit(tempGui, "w1 h1")
+    tempRe.WordWrap(false)
 
     filesWithMatches := []
 
@@ -102,7 +119,7 @@ SearchAllFiles(searchText) {
         }
     }
 
-    g_IsSearchMode := true
+    Critical("Off")
 }
 
 FindMatches(content, searchText, tempRe) {
@@ -175,32 +192,70 @@ WriteSearchLink(RE, text, fileArg, lineArg, bold := false) {
 }
 
 ; Opens the given file (base name, no extension) in the viewer and, if a line number
-; is supplied, selects and scrolls to that line.
+; is supplied, selects and scrolls to that line, highlighting the matched search term.
 OpenSearchResultLink(fileName, lineNum := 0) {
-    global rtfContent, lvFiles, txtSearch
+    global rtfContent, lvFiles, txtSearch, g_LastSearchTerm, g_WorkingFolder
 
     txtSearch.Text := ""
     RefreshFileList()
     OpenFileInViewer(fileName)
     txtSearch_OnLoseFocus()
 
-    ; Highlight the matching row in the file list for visual consistency
+    ; Highlight the matching row in the file list for visual consistency.
+    ; (No "Focus" option - that would fire ItemFocus and reopen the file a second time.)
     Loop lvFiles.GetCount() {
         if (lvFiles.GetText(A_Index, 1) = "📄 " . fileName) {
-            lvFiles.Modify(A_Index, "Select Focus Vis")
+            lvFiles.Modify(A_Index, "Select Vis")
             break
         }
     }
 
+    ; We're still inside RichEdit's own click handling for the link that got us here
+    ; (this function runs from its EN_LINK notification), and its default processing of
+    ; that same click continues after we return - which can otherwise leave a stray
+    ; EN_CHANGE notification a moment later that wrongly marks the newly-opened file dirty.
+    ; Suppress notifications now and restore them shortly on a timer, after that settles.
+    rtfContent.SetEventMask(["NONE"])
+
     if (lineNum > 0) {
-        charIdx := rtfContent.GetLineIndex(lineNum - 1)
-        if (charIdx != -1) {
-            lineLen := StrLen(rtfContent.GetLine(lineNum))
-            rtfContent.SetSel(charIdx, charIdx + lineLen)
-            rtfContent.ScrollCaret()
+        ; Line numbers were computed against a non-word-wrapped control during search, so
+        ; they are paragraph counts. Resolve the target position with a throwaway,
+        ; non-word-wrapped control loaded from the same file, rather than toggling word
+        ; wrap on the live, visible control, which would flicker.
+        fullPath := g_WorkingFolder . "\" . fileName . ".rtf"
+        if (FileExist(fullPath)) {
+            tempGui := Gui()
+            tempRe := RichEdit(tempGui, "w1 h1")
+            tempRe.WordWrap(false)
+            tempRe.LoadFile(fullPath, "Open")
+
+            charIdx := tempRe.GetLineIndex(lineNum - 1)
+            if (charIdx = -1) {
+                ; RichEdit occasionally hasn't fully settled internally immediately after
+                ; LoadFile (most reproducible right after handling a real mouse click, when
+                ; the message queue is busier) - a brief yield and retry reliably resolves it.
+                Sleep(50)
+                charIdx := tempRe.GetLineIndex(lineNum - 1)
+            }
+            if (charIdx != -1) {
+                lineText := tempRe.GetLine(lineNum)
+                lineLen := StrLen(lineText)
+
+                ; Prefer selecting just the matched term within the line; fall back to the whole line.
+                matchPos := (g_LastSearchTerm != "") ? InStr(lineText, g_LastSearchTerm, false) : 0
+                if (matchPos > 0)
+                    rtfContent.SetSel(charIdx + matchPos - 1, charIdx + matchPos - 1 + StrLen(g_LastSearchTerm))
+                else
+                    rtfContent.SetSel(charIdx, charIdx + lineLen)
+
+                rtfContent.ScrollCaret()
+            }
+            tempGui.Destroy()
         }
     }
     rtfContent.Focus()
+
+    SetTimer(() => rtfContent.SetEventMask(["SELCHANGE", "LINK", "CHANGE"]), -250)
 }
 
 PadLeft(value, len) {

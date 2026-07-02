@@ -291,13 +291,18 @@ Search_Change(*) {
 }
 
 SearchPerform() {
-    global txtSearch, PLACEHOLDER_TEXT, g_IsSearchMode, rtfContent, lvFiles, btnSave, g_CurrentFile, g_WorkingFolder
+    global txtSearch, PLACEHOLDER_TEXT, g_IsSearchMode, rtfContent, lvFiles, btnSave, g_CurrentFile, g_WorkingFolder, g_LastSearchTerm
     ; Ignore if text is placeholder
     if (txtSearch.Text == PLACEHOLDER_TEXT) {
         return
     }
     ; Perform the search logic here
     if (StrLen(txtSearch.Text) > 1) {
+        ; If the debounce timer fires more than once for the same, already-searched text
+        ; (e.g. re-triggered by Enter right after typing), skip redoing the full file scan.
+        if (g_IsSearchMode && txtSearch.Text == g_LastSearchTerm) {
+            return
+        }
         g_IsSearchMode := true
         rtfContent.SetEnabled(true)
         lvFiles.Modify(0, "-Select") ; Deselect all items
@@ -404,8 +409,13 @@ RtfContent_Link(RE, L) {
          }
       }
 
+      ; Only ever try to launch text that actually looks like a URL or file path - never
+      ; blindly Run() arbitrary clicked text (e.g. a stale/unmatched search-result link
+      ; range would otherwise try to "launch" plain text like "Line 75" and throw an error).
       URLtoOpen := rtfContent.GetTextRange(cpMin, cpMax)
-      Run '"' URLtoOpen '"'
+      if RegExMatch(URLtoOpen, "i)^(https?://|ftp://|www\.|mailto:|[a-z]:\\|\\\\)") {
+         try Run('"' URLtoOpen '"')
+      }
    }
 }
 
